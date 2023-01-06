@@ -13,9 +13,7 @@ const db = knex({
   },
 });
 
-db.select('*')
-  .from('users')
-  .then((data) => console.log(data));
+db.select('*').from('users').then(console.log);
 
 const app = express();
 
@@ -58,15 +56,16 @@ app.post('/signin', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  database.users.push({
-    id: '003',
-    name: req.body.name,
-    email: req.body.email,
-    password: req.body.password,
-    entries: 0,
-    joined: new Date(),
-  });
-  res.json(database.users[database.users.length - 1]);
+  const { name, email, password } = req.body;
+  db('users')
+    .returning('*')
+    .insert({
+      email: email,
+      name: name,
+      joined: new Date(),
+    })
+    .then((user) => res.json('Congratulation'))
+    .catch((err) => res.status(400).json('Unable to register'));
 });
 
 app.get('/profile/:id', (req, res) => {
@@ -81,13 +80,12 @@ app.get('/profile/:id', (req, res) => {
 
 app.put('/image', (req, res) => {
   const { id } = req.body;
-  database.users.forEach((user) => {
-    if (user.id === id) {
-      user.entries++;
-      return res.json(user.entries);
-    }
-  });
-  res.status(400).json('no such user');
+  db('users')
+    .where({ id: id })
+    .increment('entrie', 1)
+    .returning('entrie')
+    .then((entries) => res.json(entries[0].entries))
+    .catch((err) => res.status(400).json('fail'));
 });
 
 app.listen(3000, () => {
