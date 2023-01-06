@@ -1,5 +1,21 @@
 const express = require('express');
 const cors = require('cors');
+const knex = require('knex');
+
+const db = knex({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    port: 5432,
+    user: 'pichborith',
+    password: '',
+    database: 'face-detection',
+  },
+});
+
+db.select('*')
+  .from('users')
+  .then((data) => console.log(data));
 
 const app = express();
 
