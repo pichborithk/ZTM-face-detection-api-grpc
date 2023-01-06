@@ -66,15 +66,20 @@ app.post('/register', (req, res) => {
   }).catch((err) => res.status(400).json('Unable to register (2)'));
 });
 
-// app.get('/profile/:id', (req, res) => {
-//   const { id } = req.params;
-//   database.users.forEach((user) => {
-//     if (user.id === id) {
-//       return res.json(user);
-//     }
-//   });
-//   res.status(400).json('no such user');
-// });
+app.get('/profile/:id', (req, res) => {
+  const { id } = req.params;
+  db.select('*')
+    .from('users')
+    .where({ id: id })
+    .then((data) => {
+      if (data.length) {
+        res.json(data);
+      } else {
+        res.status(400).json('Not found');
+      }
+    })
+    .catch((err) => res.status(400).json('error getting user'));
+});
 
 app.put('/image', (req, res) => {
   const { id } = req.body;
