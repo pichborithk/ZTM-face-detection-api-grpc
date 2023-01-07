@@ -5,8 +5,8 @@ const bcrypt = require('bcryptjs');
 
 const signin = require('./controllers/signin');
 const register = require('./controllers/register');
-const image = require('./controllers/image');
 const profile = require('./controllers/profile');
+const image = require('./controllers/image');
 
 const db = knex({
   client: 'pg',
@@ -33,6 +33,8 @@ app.post('/register', (req, res) => {
 app.get('/profile/:id', (req, res) => {
   profile.handleProfile(req, res, db);
 });
+
+app.post('/imageUrl', image.handleApiCall);
 
 app.put('/image', image.handleImage(db));
 
