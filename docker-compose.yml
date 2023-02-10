@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  nodejsserver:
+    container_name: backend
+    build: ./
+    command: npm start
+    working_dir: /usr/src/face-detection-api-grpc
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./:/usr/src/face-detection-api-grpc

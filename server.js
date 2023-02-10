@@ -24,6 +24,14 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// app.get('/', (req, res) => {
+//   res.send(db.users);
+// });
+
+app.get('/', (req, res) => {
+  res.send('Really?');
+});
+
 app.post('/signin', signin.handleSignin(db, bcrypt));
 
 app.post('/register', (req, res) => {
