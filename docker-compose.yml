@@ -6,7 +6,24 @@ services:
     build: ./
     command: npm start
     working_dir: /usr/src/face-detection-api-grpc
+    environment:
+      # POSTGRES_USER: pichborith
+      # POSTGRES_PASSWORD: secret
+      # POSTGRES_DB: face-detection-db
+      # POSTGRES_HOST: postgres
+      POSTGRES_URI: postgres://pichborith:secret@postgres:5432/face-detection-db
+    # links:
+    #   - postgres
     ports:
       - '3000:3000'
     volumes:
       - ./:/usr/src/face-detection-api-grpc
+  postgres:
+    build: ./postgres
+    environment:
+      POSTGRES_USER: pichborith
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: face-detection-db
+      POSTGRES_HOST: postgres
+    ports:
+      - '5432:5432'
