@@ -1,18 +1,18 @@
 const jwt = require('jsonwebtoken');
 const redis = require('redis');
 
-(async () => {
-  const redisClient = redis.createClient({ url: process.env.REDIS_URI });
+const redisClient = redis.createClient({ url: process.env.REDIS_URI });
 
-  redisClient.on('error', (err) => console.log('Redis Client Error', err));
-  await redisClient.connect();
-  await redisClient.set('key', 'value');
-  const value = await redisClient.get('key');
-  console.log(value);
-  // await client.disconnect();
-})();
+// (async () => {
+//   await redisClient.connect();
+// })();
 
-const handleSignin = (db, bcrypt, req, res) => {
+async function redisConnect() {
+  return await redisClient.connect();
+}
+redisConnect();
+
+function handleSignin(db, bcrypt, req, res) {
   if (!req.body.email || !req.body.password) {
     return Promise.reject('incorrect form submission');
   }
@@ -37,7 +37,7 @@ const handleSignin = (db, bcrypt, req, res) => {
       })
       .catch((err) => Promise.reject('Wrong credentials'))
   );
-};
+}
 
 const getAuthTokenId = () => {
   console.log('Auth Ok');
@@ -48,10 +48,22 @@ const signToken = (email) => {
   return jwt.sign(jwtPayload, 'JWT_SECRET', { expiresIn: '2 days' });
 };
 
+const setToken = (key, value) => {
+  return Promise.resolve(redisClient.set(key, value));
+};
+
 const createSession = (user) => {
   const { email, id } = user;
   const token = signToken(email);
-  return { success: 'true', userId: id, token };
+  return setToken(token, id)
+    .then(() => {
+      return {
+        success: 'true',
+        userId: id,
+        token,
+      };
+    })
+    .catch(console.log);
 };
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
