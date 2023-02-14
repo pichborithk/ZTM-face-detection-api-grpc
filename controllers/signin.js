@@ -1,4 +1,16 @@
 const jwt = require('jsonwebtoken');
+const redis = require('redis');
+
+(async () => {
+  const redisClient = redis.createClient({ url: process.env.REDIS_URI });
+
+  redisClient.on('error', (err) => console.log('Redis Client Error', err));
+  await redisClient.connect();
+  await redisClient.set('key', 'value');
+  const value = await redisClient.get('key');
+  console.log(value);
+  // await client.disconnect();
+})();
 
 const handleSignin = (db, bcrypt, req, res) => {
   if (!req.body.email || !req.body.password) {
