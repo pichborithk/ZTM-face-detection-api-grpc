@@ -48,10 +48,15 @@ const getAuthTokenId = (req, res) => {
   //   }
   //   return res.json({ id: reply });
   // });
-  return redisClient
-    .get(authorization)
-    .then((reply) => res.json({ id: reply }))
-    .catch(console.log);
+  console.log(authorization);
+  redisClient.get(authorization).then((reply) => {
+    if (!reply) {
+      console.log(reply);
+      return res.status(401).json('Unauthorized');
+    }
+    console.log(reply);
+    return res.json({ id: reply });
+  });
 };
 
 const signToken = (email) => {
@@ -79,6 +84,7 @@ const createSession = (user) => {
 
 const signinAuthentication = (db, bcrypt) => (req, res) => {
   const { authorization } = req.headers;
+  console.log(authorization);
   return authorization
     ? getAuthTokenId(req, res)
     : handleSignin(db, bcrypt, req, res)
@@ -91,4 +97,7 @@ const signinAuthentication = (db, bcrypt) => (req, res) => {
         .catch((err) => res.status(400).json(err));
 };
 
-module.exports = { signinAuthentication: signinAuthentication };
+module.exports = {
+  signinAuthentication: signinAuthentication,
+  redisClient: redisClient,
+};
