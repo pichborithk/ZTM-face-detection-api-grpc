@@ -7,6 +7,7 @@ const signin = require('./controllers/signin');
 const register = require('./controllers/register');
 const profile = require('./controllers/profile');
 const image = require('./controllers/image');
+const auth = require('./controllers/authorization');
 
 const db = knex({
   client: 'pg',
@@ -39,17 +40,17 @@ app.post('/register', (req, res) => {
   register.handleRegister(req, res, db, bcrypt);
 });
 
-app.get('/profile/:id', (req, res) => {
+app.get('/profile/:id', auth.requireAuth, (req, res) => {
   profile.handleProfileGet(req, res, db);
 });
 
-app.post('/profile/:id', (req, res) => {
+app.post('/profile/:id', auth.requireAuth, (req, res) => {
   profile.handleProfileUpdate(req, res, db);
 });
 
-app.post('/imageUrl', image.handleApiCall);
+app.post('/imageUrl', auth.requireAuth, image.handleApiCall);
 
-app.put('/image', image.handleImage(db));
+app.put('/image', auth.requireAuth, image.handleImage(db));
 
 app.listen(3000, () => {
   console.log('app is running on port 3000');
