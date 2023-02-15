@@ -5,7 +5,7 @@ const handleProfileGet = (req, res, db) => {
     .where({ id: id })
     .then((data) => {
       if (data.length) {
-        res.json(data);
+        res.json(data[0]);
       } else {
         res.status(400).json('Not found');
       }
